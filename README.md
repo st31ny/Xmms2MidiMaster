@@ -16,5 +16,13 @@ In order to compile the following packages/libraries are required:
     - `libpython-dev`
 - `libboost-program-options-dev`
 
+A `Makefile` is provided to build the program. Available targets are:
+
+- `all`: Compile the program
+- `doc`: Generate the source code documentation
+- `clean`: Remove all generated files (object files, binaries, generated documentation)
+
+Furthermore `doxygen` is required to generate the source code documentation.
+
 [xmms2-git]: http://git.xmms.se/
 
