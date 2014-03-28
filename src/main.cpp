@@ -17,10 +17,57 @@
 
 #include <iostream>
 
+#include "SongIdNotifier.h"
+
 int main( int argc, char* argv[] )
 {
-    std::cout << "Hello World!" << std::endl;
     std::cout << "Version: " << VERSION << std::endl;
+
+    IdMap map;
+    std::cout << "Mapping as a/b input - maps a onto b (-1 to end input):\n";
+    for( ; ; ) {
+        int a,b;
+        std::cout << "a=";
+        std::cin >> a;
+        if( a == -1 )
+            break;
+        std::cout << "b=";
+        std::cin >> b;
+        map[ a ] = b;
+    }
+
+    int dlId;
+    std::cout << "Offset: ";
+    std::cin >> dlId;
+
+    int bCmd;
+    std::cout << "MIDI-Command to send (80, 90, A0, B0) [all hex]: ";
+    std::cin >> std::hex >> bCmd;
+
+    MidiByte bChannel;
+    int lT;
+    std::cout << "MIDI-Channel [hex]: ";
+    std::cin >> lT;
+    bChannel = lT;
+
+    bool fLE;
+    std::cout << "Little Endian: ";
+    std::cin >> fLE;
+
+    SongIdNotifier grNote( static_cast<SongIdNotifier::ESongIdNotifierCommand>( bCmd ), 
+            bChannel, fLE, map, dlId );
+
+    std::cout << "Send song ids (-1 to exit) [hex]:\n";
+    for( ; ; )
+    {
+        int ilId;
+        std::cout << "ID=";
+        std::cin >> ilId;
+        std::cout << "MIDI=" << std::hex << grNote.getMsg( ilId ) << std::endl;
+        if( ilId == -1 )
+            break;
+    }
+
 
     return 0;
 }

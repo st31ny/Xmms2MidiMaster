@@ -5,7 +5,7 @@ MKDIR = mkdir -p
 DOXYGEN = doxygen
 
 # source files
-SRC = main.cpp
+SRC = main.cpp SongIdNotifier.cpp
 
 # version
 VERSION = $(shell git log -1 --pretty=format:%h)
