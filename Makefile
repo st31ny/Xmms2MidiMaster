@@ -50,8 +50,7 @@ $(BINDIR):
 
 .PHONY: doc 
 doc: $(DOXYFILE)
-	export GITHASH=$(VERSION)
-	$(DOXYGEN) $(DOXYFILE)
+	GITHASH=$(VERSION) $(DOXYGEN) $(DOXYFILE)
 
 .PHONY: clean
 clean:
