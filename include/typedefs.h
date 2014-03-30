@@ -59,6 +59,12 @@ typedef unsigned char MidiByte;
                                                     (((data1) << 8) & 0x7F00) | \
                                                     ((status) & 0xFF))
 
+/**
+ * @brief   Check if a MIDI short message is valid
+ */
+#define MIDI_MSG_SHORT_VALID(msg)               ( ((msg)&0x80) && ((~(msg))&0x8000) && \
+                                                    ((~(msg))&0x800000) && ((~(msg))&0xFF000000) )
+
 
 #endif // ifndef _TYPEDEFS_H_
 

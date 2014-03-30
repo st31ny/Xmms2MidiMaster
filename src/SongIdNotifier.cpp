@@ -18,17 +18,20 @@
 #include "SongIdNotifier.h"
 
 SongIdNotifier::SongIdNotifier(
-        ESongIdNotifierCommand   bCmd,
-        MidiByte                 bChannel,
-        bool                     fLE,
-        const IdMap&             mpllId,
-        int                      dlId
+               const IdMap&             mpllId,
+               int                      dlId,
+               ESongIdNotifierCommand   bCmd,
+               MidiByte                 bChannel,
+               bool                     fLE
     ) : _mpllId( mpllId ), _dlId( dlId ), _rgbStatus( MIDI_STATUS_BYTE( bCmd, bChannel ) ), _fLE( fLE )
 {
 }
 
 MidiMsg SongIdNotifier::getMsg( int ilSongId ) const
 {
+    if( !MIDI_MSG_SHORT_VALID( _rgbStatus ) )
+        return 0;
+
     if( _mpllId.count( ilSongId ) > 0 ) // direct mapping available
         ilSongId = _mpllId.at( ilSongId );
     else // no direct mapping, so use the offset

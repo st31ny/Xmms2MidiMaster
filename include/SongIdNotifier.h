@@ -64,11 +64,11 @@ class SongIdNotifier
          *              Offset used if no direct mapping is available
          */
         SongIdNotifier(
-               ESongIdNotifierCommand   bCmd,
-               MidiByte                 bChannel,
-               bool                     fLE,
                const IdMap&             mpllId,
-               int                      dlId
+               int                      dlId = 0,
+               ESongIdNotifierCommand   bCmd = ESINC_NONE,
+               MidiByte                 bChannel = 0,
+               bool                     fLE = false
             );
 
         /**
@@ -77,16 +77,58 @@ class SongIdNotifier
          *              The song id to send
          * @return  MIDI command to send:
          *              Byte 0: status byte
-         *              Byte 1: data byte 1
-         *              Byte 2: data byte 2
+         *              Byte 1: data byte 1 (7 bits)
+         *              Byte 2: data byte 2 (7 bits)
+         *          Negative resulting song ids are represented in the two's complement.
+         *          Byte order according to the set endianness See {@link setEndian(bool)} for details.
+         *          If the MIDI command was set to ESINC_NONE, function returns 0.
          */
         MidiMsg getMsg( int ilSongId ) const;
 
+        /**
+         * @brief   Set the MIDI command
+         * @param   bCmd
+         *              Item of ESongIdNotifierCommand
+         */
+        void setMidiCommand( ESongIdNotifierCommand bCmd )
+        {
+            _rgbStatus = MIDI_STATUS_BYTE( bCmd, _rgbStatus );
+        }
+
+        /**
+         * @brief   Set the MIDI channel
+         * @param   bChannel
+         *              MIDI channel as sent over the physical connection [0..15]
+         */
+        void setMidiChannel( MidiByte bChannel )
+        {
+            _rgbStatus = MIDI_STATUS_BYTE( _rgbStatus, bChannel );
+        }
+
+        /**
+         * @brief   Set the transfer endian
+         * @param   fLE
+         *              True to use little endian, i.e. send the least significant bits first
+         */
+        void setEndian( bool fLE )
+        {
+            _fLE = fLE;
+        }
+        
+        /**
+         * @brief   Set the song id offset
+         */
+        void setSongIdOffset( int dlId )
+        {
+            _dlId = dlId;
+        }
+
+
     private:
         const IdMap&        _mpllId;
-        const int           _dlId;
-        const MidiByte      _rgbStatus; // MIDI status byte
-        const bool          _fLE; // use little endian
+        int                 _dlId;
+        MidiByte            _rgbStatus; // MIDI status byte
+        bool                _fLE; // use little endian
 };
 
 #endif // ifndef _SONGIDNOTIFIER_H_

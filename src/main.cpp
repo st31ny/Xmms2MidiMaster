@@ -24,6 +24,9 @@ int main( int argc, char* argv[] )
     std::cout << "Version: " << VERSION << std::endl;
 
     IdMap map;
+   
+    SongIdNotifier grNote( map );
+
     std::cout << "Mapping as a/b input - maps a onto b (-1 to end input):\n";
     for( ; ; ) {
         int a,b;
@@ -39,23 +42,24 @@ int main( int argc, char* argv[] )
     int dlId;
     std::cout << "Offset: ";
     std::cin >> dlId;
+    grNote.setSongIdOffset( dlId );
 
     int bCmd;
     std::cout << "MIDI-Command to send (80, 90, A0, B0) [all hex]: ";
     std::cin >> std::hex >> bCmd;
+    grNote.setMidiCommand( static_cast<SongIdNotifier::ESongIdNotifierCommand>( bCmd ) );
 
     MidiByte bChannel;
     int lT;
     std::cout << "MIDI-Channel [hex]: ";
     std::cin >> lT;
     bChannel = lT;
+    grNote.setMidiChannel( bChannel );
 
     bool fLE;
     std::cout << "Little Endian: ";
     std::cin >> fLE;
-
-    SongIdNotifier grNote( static_cast<SongIdNotifier::ESongIdNotifierCommand>( bCmd ), 
-            bChannel, fLE, map, dlId );
+    grNote.setEndian( fLE );
 
     std::cout << "Send song ids (-1 to exit) [hex]:\n";
     for( ; ; )

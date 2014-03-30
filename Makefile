@@ -16,7 +16,6 @@ ODIR = obj
 SRCDIR = src
 BINDIR = bin
 TARGET = x2mm
-DEPENDFILE = .depend
 DOCDIR = doc/doxygen/
 DOXYFILE = Doxyfile
 
