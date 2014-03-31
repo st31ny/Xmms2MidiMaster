@@ -5,7 +5,7 @@ MKDIR = mkdir -p
 DOXYGEN = doxygen
 
 # source files
-SRC = main.cpp SongIdNotifier.cpp
+SRC = main.cpp SongIdNotifier.cpp Config.cpp
 
 # version
 VERSION = $(shell git log -1 --pretty=format:%h)
@@ -21,20 +21,21 @@ DOXYFILE = Doxyfile
 
 # compiler and linker flags
 DEBUG = -g
-CXXFLAGS = -Wall -c -DVERSION=\"$(VERSION)\" $(DEBUG)
+CXXFLAGS = -Wall -std=c++11 -c -DVERSION=\"$(VERSION)\" $(DEBUG)
 CPPFLAGS = -I$(IDIR)
 
 LDFLAGS = $(DEBUG)
-LDLIBS =
+LDLIBS = -lboost_program_options -lboost_regex -lportmidi
 
 ################################################################################
 OBJ_ = $(SRC:%.cpp=%.o)
 OBJ = $(addprefix $(ODIR)/, $(OBJ_))
+TARGET_ = $(BINDIR)/$(TARGET)
 
-all: $(TARGET)
+all: $(TARGET_)
 
-$(TARGET): $(ODIR) $(BINDIR) $(OBJ)
-	$(CXX) $(LDLIBS) $(LDFLAGS) -o $(BINDIR)/$(TARGET) $(OBJ)
+$(TARGET_): $(ODIR) $(BINDIR) $(OBJ)
+	$(CXX) $(LDLIBS) $(LDFLAGS) -o $(TARGET_) $(OBJ)
 
 $(ODIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MD -o $@ $<

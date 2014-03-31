@@ -19,12 +19,14 @@
 #define _TYPEDEFS_H_
 
 #include <map>
+#include <utility>
 
 /**
  * @brief   Type for mapping XMMS2 song ids to MIDI notes to emit on
  *          song change.
  */
 typedef std::map<int, int> IdMap;
+typedef std::pair<int, int> IdMapEntry;
 
 /**
  * @brief   Represent a complete MIDI message

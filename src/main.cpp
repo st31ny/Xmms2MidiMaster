@@ -17,62 +17,46 @@
 
 #include <iostream>
 
-#include "SongIdNotifier.h"
+#include <portmidi.h>
+
+#include "Config.h"
 
 int main( int argc, char* argv[] )
 {
-    std::cout << "Version: " << VERSION << std::endl;
+    // PortMidi warm up
+    Pm_Initialize();
+    std::cout << argv[ 0 ] << "Copyright (C) 2014 Maximilian Stein"
+              << "\nVersion: " << VERSION << std::endl;
+    
+    int lRet = 0; // return code
+    try {
+        Config config( argc, argv );
+        if( !config )
+            throw 1;
 
-    IdMap map;
-   
-    SongIdNotifier grNote( map );
-
-    std::cout << "Mapping as a/b input - maps a onto b (-1 to end input):\n";
-    for( ; ; ) {
-        int a,b;
-        std::cout << "a=";
-        std::cin >> a;
-        if( a == -1 )
-            break;
-        std::cout << "b=";
-        std::cin >> b;
-        map[ a ] = b;
+        std::cout << "Send song ids (-1 to exit) [hex]:\n";
+        for( ; ; )
+        {
+            int ilId;
+            std::cout << "ID=";
+            std::cin >> ilId;
+            std::cout << "BEGIN=" << std::hex << config.beginNotifier().getMsg( ilId ) << '\n'
+                      << "END=  " << std::hex << config.endNotifier().getMsg( ilId )
+                      << std::endl;
+            if( ilId == -1 )
+                break;
+        }
     }
-
-    int dlId;
-    std::cout << "Offset: ";
-    std::cin >> dlId;
-    grNote.setSongIdOffset( dlId );
-
-    int bCmd;
-    std::cout << "MIDI-Command to send (80, 90, A0, B0) [all hex]: ";
-    std::cin >> std::hex >> bCmd;
-    grNote.setMidiCommand( static_cast<SongIdNotifier::ESongIdNotifierCommand>( bCmd ) );
-
-    MidiByte bChannel;
-    int lT;
-    std::cout << "MIDI-Channel [hex]: ";
-    std::cin >> lT;
-    bChannel = lT;
-    grNote.setMidiChannel( bChannel );
-
-    bool fLE;
-    std::cout << "Little Endian: ";
-    std::cin >> fLE;
-    grNote.setEndian( fLE );
-
-    std::cout << "Send song ids (-1 to exit) [hex]:\n";
-    for( ; ; )
+    catch( int& l )
     {
-        int ilId;
-        std::cout << "ID=";
-        std::cin >> ilId;
-        std::cout << "MIDI=" << std::hex << grNote.getMsg( ilId ) << std::endl;
-        if( ilId == -1 )
-            break;
+        lRet = l;
     }
 
+    std::cout << "Stop." << std::endl;
 
-    return 0;
+
+    // PortMidi shutdown
+    Pm_Terminate();
+    return lRet;
 }
 
