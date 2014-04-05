@@ -16,16 +16,19 @@
  */
 
 #include <iostream>
+#include <stdexcept>
 
 #include <portmidi.h>
 
 #include "Config.h"
+#include "StatusExchange.h"
+#include "XmmsClient.h"
 
 int main( int argc, char* argv[] )
 {
     // PortMidi warm up
     Pm_Initialize();
-    std::cout << argv[ 0 ] << "Copyright (C) 2014 Maximilian Stein"
+    std::cout << argv[ 0 ] << " Copyright (C) 2014 Maximilian Stein"
               << "\nVersion: " << VERSION << std::endl;
     
     int lRet = 0; // return code
@@ -33,6 +36,17 @@ int main( int argc, char* argv[] )
         Config config( argc, argv );
         if( !config )
             throw 1;
+
+        volatile StatusExchange grEx;
+        try {
+            XmmsClient client( config, grEx );
+            client.run();
+        }
+        catch( std::runtime_error& err )
+        {
+            std::cerr << "XMMS2 connection failed." << std::endl;
+            throw 2;
+        }
 
         std::cout << "Send song ids (-1 to exit) [hex]:\n";
         for( ; ; )

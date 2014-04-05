@@ -5,7 +5,7 @@ MKDIR = mkdir -p
 DOXYGEN = doxygen
 
 # source files
-SRC = main.cpp SongIdNotifier.cpp Config.cpp
+SRC = main.cpp SongIdNotifier.cpp Config.cpp XmmsClient.cpp
 
 # version
 VERSION = $(shell git log -1 --pretty=format:%h)
@@ -21,11 +21,11 @@ DOXYFILE = Doxyfile
 
 # compiler and linker flags
 DEBUG = -g
-CXXFLAGS = -Wall -std=c++11 -c -DVERSION=\"$(VERSION)\" $(DEBUG)
+CXXFLAGS = -Wall -c -DVERSION=\"$(VERSION)\" $(DEBUG) `pkg-config --cflags xmms2-client-cpp`
 CPPFLAGS = -I$(IDIR)
 
 LDFLAGS = $(DEBUG)
-LDLIBS = -lboost_program_options -lboost_regex -lportmidi
+LDLIBS = -lboost_program_options -lboost_regex -lportmidi `pkg-config --libs xmms2-client-cpp`
 
 ################################################################################
 OBJ_ = $(SRC:%.cpp=%.o)
