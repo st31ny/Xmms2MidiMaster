@@ -21,7 +21,7 @@ DOXYFILE = Doxyfile
 
 # compiler and linker flags
 DEBUG = -g
-CXXFLAGS = -Wall -c -DVERSION=\"$(VERSION)\" $(DEBUG) `pkg-config --cflags xmms2-client-cpp`
+CXXFLAGS = -std=c++11 -Wall -c -DVERSION=\"$(VERSION)\" $(DEBUG) `pkg-config --cflags xmms2-client-cpp`
 CPPFLAGS = -I$(IDIR)
 
 LDFLAGS = $(DEBUG)

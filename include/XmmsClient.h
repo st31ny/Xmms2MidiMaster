@@ -24,7 +24,7 @@
 #include <xmmsclient/xmmsclient++.h>
 
 #include "Config.h"
-#include "StatusExchange.h"
+#include "Status.h"
 
 /**
  * @brief   Class receiving all required XMMS2 events (song id, playback status, time)
@@ -40,10 +40,10 @@ class XmmsClient
          *              StatusExchange object to write results to
          * @throws  std::runtime_error
          */
-        XmmsClient( const Config& config, volatile StatusExchange& grEx );
+        XmmsClient( const Config& config, Status& grEx );
 
         /**
-         * @brief   Main loop. Register all signals and broadcasts and loop indefinitely
+         * @brief   Main loop. Register all signals and broadcasts and loop infinitely
          */
         void run();
 
@@ -82,7 +82,7 @@ class XmmsClient
     private:
         Xmms::Client                _client;
         const Config&               _config;
-        volatile StatusExchange&    _grEx;
+        Status&    _grEx;
 };
 
 #endif // ifndef _XMMSCLIENT_H_

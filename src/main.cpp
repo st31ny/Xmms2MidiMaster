@@ -21,7 +21,7 @@
 #include <portmidi.h>
 
 #include "Config.h"
-#include "StatusExchange.h"
+#include "Status.h"
 #include "XmmsClient.h"
 
 int main( int argc, char* argv[] )
@@ -37,9 +37,9 @@ int main( int argc, char* argv[] )
         if( !config )
             throw 1;
 
-        volatile StatusExchange grEx;
+        Status state;
         try {
-            XmmsClient client( config, grEx );
+            XmmsClient client( config, state );
             client.run();
         }
         catch( std::runtime_error& err )

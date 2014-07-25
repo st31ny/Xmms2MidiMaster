@@ -18,7 +18,7 @@
 #include "XmmsClient.h"
 
 
-XmmsClient::XmmsClient( const Config& config, volatile StatusExchange& grEx )
+XmmsClient::XmmsClient( const Config& config, Status& grEx )
     : _client( "XmmsMidiMaster" ), _config( config ), _grEx( grEx )
 {
     if( config.getXmmsPath().size() == 0 )
@@ -50,7 +50,7 @@ void XmmsClient::run()
 bool XmmsClient::signalPlaytime( const int& lTime )
 {
 
-    _grEx.setTime( lTime );
+    //_grEx.setTime( lTime );
 
     return true;
 }
@@ -70,17 +70,17 @@ bool XmmsClient::broadcastStatus( const Xmms::Playback::Status& iState )
     switch( iState )
     {
         case Xmms::Playback::STOPPED:
-            _grEx.setPlaybackStatus( StatusExchange::EPS_STOPPED );
+            _grEx.setPlaybackStatus( Status::EPS_STOPPED );
             if( _config.beVerbose() )
                 std::cout << "new status: STOPPED" << std::endl;
             break;
         case Xmms::Playback::PLAYING:
-            _grEx.setPlaybackStatus( StatusExchange::EPS_PLAYING );
+            _grEx.setPlaybackStatus( Status::EPS_PLAYING );
             if( _config.beVerbose() )
                 std::cout << "new status: PLAYING" << std::endl;
             break;
         case Xmms::Playback::PAUSED:
-            _grEx.setPlaybackStatus( StatusExchange::EPS_PAUSED );
+            _grEx.setPlaybackStatus( Status::EPS_PAUSED );
             if( _config.beVerbose() )
                 std::cout << "new status: PAUSED" << std::endl;
             break;
