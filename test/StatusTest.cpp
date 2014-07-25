@@ -27,7 +27,7 @@ SUITE(StatusTest)
 {
     struct Fixture
     {
-        Fixture()
+        Fixture() : consttarget( target )
         {
 
         }
@@ -35,18 +35,48 @@ SUITE(StatusTest)
         ~Fixture() {}
 
         Status target;
+        const Status& consttarget;
     };
 
     TEST_FIXTURE( Fixture, PlaybackStatus )
     {
+
         // initial state: stopped
-        CHECK_EQUAL( target.getPlaybackStatus(), Status::EPS_STOPPED );
+        CHECK_EQUAL( consttarget.getPlaybackStatus(), Status::EPS_STOPPED );
 
         target.setPlaybackStatus( Status::EPS_PLAYING );
-        CHECK_EQUAL( target.getPlaybackStatus(), Status::EPS_PLAYING );
+        CHECK_EQUAL( consttarget.getPlaybackStatus(), Status::EPS_PLAYING );
 
         target.setPlaybackStatus( Status::EPS_PAUSED );
-        CHECK_EQUAL( target.getPlaybackStatus(), Status::EPS_PAUSED );
+        CHECK_EQUAL( consttarget.getPlaybackStatus(), Status::EPS_PAUSED );
+    }
+
+    TEST_FIXTURE( Fixture, SongID )
+    {
+        // initial song id: 0
+        CHECK_EQUAL( consttarget.getSongId(), 0 );
+
+        target.setSongId( 42 );
+        CHECK_EQUAL( consttarget.getSongId(), 42 );
+    }
+
+    TEST_FIXTURE( Fixture, Time )
+    {
+        // initial time: TimePointInvalid
+        CHECK( consttarget.getTimeNew() == TimePointInvalid );
+        CHECK( consttarget.getTimeOld() == TimePointInvalid );
+
+        // set time => old time stays invalid, new time is updated
+        LTimePoint ltp = std::chrono::high_resolution_clock::now();
+        target.setTime( 0, ltp );
+        CHECK( consttarget.getTimeNew() == TimePoint( 0, ltp ) );
+        CHECK( consttarget.getTimeOld() == TimePointInvalid );
+
+        // set time again
+        LTimePoint ltp2 = std::chrono::high_resolution_clock::now();
+        target.setTime( 1, ltp2 );
+        CHECK( consttarget.getTimeNew() == TimePoint( 1, ltp2 ) );
+        CHECK( consttarget.getTimeOld() == TimePoint( 0, ltp ) );
     }
 
 }

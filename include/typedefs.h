@@ -93,7 +93,7 @@ static const XTimePoint                         XTimePointInvalid = 0;
  * @brief   A precise time point measured with a high resolution clock
  */
 typedef std::chrono::time_point<std::chrono::high_resolution_clock,
-            std::chrono::microseconds>          LTimePoint;
+            std::chrono::nanoseconds>           LTimePoint;
 
 /**
  * @brief   Invalid local time value
