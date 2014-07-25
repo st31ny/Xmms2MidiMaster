@@ -18,9 +18,10 @@
 #include "XmmsClient.h"
 
 
-XmmsClient::XmmsClient( const Config& config, Status& grEx )
-    : _client( "XmmsMidiMaster" ), _config( config ), _grEx( grEx )
+XmmsClient::XmmsClient( const Config& config, Exchange<Status>& ex ) 
+    : _client( "XmmsMidiMaster" ), _config( config ), _grStatusExchange( ex )
 {
+    // connect to xmms2
     if( config.getXmmsPath().size() == 0 )
         _client.connect(); // try to connect at default path
     else
@@ -34,9 +35,14 @@ void XmmsClient::run()
 {
     if( _config.beVerbose() )
         std::cout << "request XMMS2 signals and broadcasts\n";
+    // register for broadcasts and request initial values (the latter is important: otherwise we won't
+    // have a valid state until something changes
     _client.playback.signalPlaytime()( Xmms::bind( &XmmsClient::signalPlaytime, this ) );
+    _client.playback.getPlaytime()( Xmms::bind( &XmmsClient::signalPlaytime, this ) );
     _client.playback.broadcastCurrentID()( Xmms::bind( &XmmsClient::broadcastId, this ) );
+    _client.playback.currentID()( Xmms::bind( &XmmsClient::broadcastId, this ) );
     _client.playback.broadcastStatus()( Xmms::bind( &XmmsClient::broadcastStatus, this ) );
+    _client.playback.getStatus()( Xmms::bind( &XmmsClient::broadcastStatus, this ) );
 
     if( _config.beVerbose() )
         std::cout << "enter XMMS2 main loop" << std::endl;
@@ -49,15 +55,23 @@ void XmmsClient::run()
 
 bool XmmsClient::signalPlaytime( const int& lTime )
 {
+    // get localtime
+    LTimePoint ltp = std::chrono::high_resolution_clock::now();
 
-    //_grEx.setTime( lTime );
+    _grStatus.setTime( lTime, ltp );
+
+    // send status update
+    _grStatusExchange.write( _grStatus );
 
     return true;
 }
 
 bool XmmsClient::broadcastId( const int& ilSongId )
 {
-    _grEx.setSongId( ilSongId );
+    _grStatus.setSongId( ilSongId );
+
+    // send status update
+    _grStatusExchange.write( _grStatus );
 
     if( _config.beVerbose() )
         std::cout << "new song id: " << ilSongId << std::endl;
@@ -70,21 +84,24 @@ bool XmmsClient::broadcastStatus( const Xmms::Playback::Status& iState )
     switch( iState )
     {
         case Xmms::Playback::STOPPED:
-            _grEx.setPlaybackStatus( Status::EPS_STOPPED );
+            _grStatus.setPlaybackStatus( Status::EPS_STOPPED );
             if( _config.beVerbose() )
                 std::cout << "new status: STOPPED" << std::endl;
             break;
         case Xmms::Playback::PLAYING:
-            _grEx.setPlaybackStatus( Status::EPS_PLAYING );
+            _grStatus.setPlaybackStatus( Status::EPS_PLAYING );
             if( _config.beVerbose() )
                 std::cout << "new status: PLAYING" << std::endl;
             break;
         case Xmms::Playback::PAUSED:
-            _grEx.setPlaybackStatus( Status::EPS_PAUSED );
+            _grStatus.setPlaybackStatus( Status::EPS_PAUSED );
             if( _config.beVerbose() )
                 std::cout << "new status: PAUSED" << std::endl;
             break;
     }
+
+    // send status update
+    _grStatusExchange.write( _grStatus );
 
     return true;
 }

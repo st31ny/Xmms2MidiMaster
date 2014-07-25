@@ -23,13 +23,11 @@
 #include "typedefs.h"
 
 /**
- * @brief   Class provided to exchange time, playback status and song id
+ * @brief   Class to exchange time, playback status and song id
  *          between the XMMS2 client and the MIDI master
  *
  * An instance of this class represents a complete xmms2 status. Thus, it should not
  * be fragmented nor contain only updated fields.
- * The status object holds two time points enabling linear extrapolation of the local time
- * (i.e. "When will xyz ms have passed?"). Local time = system time on this machine.
  */
 class Status
 {
@@ -48,9 +46,10 @@ class Status
         /**
          * @brief   Default Constructor
          */
-        Status() : _iState( EPS_STOPPED ), _ilSongId( 0 ), 
-                   _grTime1( TimePointInvalid ), _grTime2( TimePointInvalid )
-                {}
+        Status() : _iState( EPS_STOPPED ), _ilSongId( XSongIdInvalid ), 
+                   _grTime( TimePointInvalid )
+        {
+        }
 
         /**
          * @brief   Set playback status
@@ -74,38 +73,23 @@ class Status
         /**
          * @brief   Set the current playing position
          * @param   lXTime
-         *              Current xmms2 playing position in ms.
+         *              Current xmms2 playing position in ms
          * @param   lLocalTime
          *              Time point when playing position notification was received
-         *
-         * There are always to time points stored, so invoking this method replaces
-         * the oldest one.
          */
         void setTime( XTimePoint lXTime, LTimePoint lLocalTime )
         {
-            // push back the former newest time pair
-            _grTime2 = std::move( _grTime1 );
-            // store new time point
-            _grTime1 = TimePoint( lXTime, lLocalTime );
+            _grTime = TimePoint( lXTime, lLocalTime );
         }
 
         /**
-         * @brief   Get the older time point
+         * @brief   Get the time point pair
          * @return  TimePoint holding the xmms2 playback position ("first") and the
          *          corresponding local time ("second")
          */
-        TimePoint getTimeOld() const
+        TimePoint getTime() const
         {
-            return _grTime2;
-        }
-
-        /**
-         *  @brief  Get the newer time point
-         *  @return TimePoint. See {@link Status::getTimeOld()} for details.
-         */
-        TimePoint getTimeNew() const
-        {
-            return _grTime1;
+            return _grTime;
         }
 
         /**
@@ -132,10 +116,7 @@ class Status
         EPlaybackStatus         _iState;
         XSongId                 _ilSongId;
 
-        // time points for linear extrapolation
-        // _grTime1 >= _grTime2
-        TimePoint               _grTime1;
-        TimePoint               _grTime2;
+        TimePoint               _grTime;
 };
 
 #endif // ifndef _STATUS_H_

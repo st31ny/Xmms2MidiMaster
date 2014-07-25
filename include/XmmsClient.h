@@ -20,9 +20,13 @@
 
 #include <string>
 #include <iostream>
+#include <chrono>
 
 #include <xmmsclient/xmmsclient++.h>
 
+#include "typedefs.h"
+
+#include "Exchange.h"
 #include "Config.h"
 #include "Status.h"
 
@@ -36,11 +40,11 @@ class XmmsClient
          * @brief   Constructor
          * @param   config
          *              Config object
-         * @param   grEx
-         *              StatusExchange object to write results to
+         * @param   ex
+         *              Exchange object to write status updates to
          * @throws  std::runtime_error
          */
-        XmmsClient( const Config& config, Status& grEx );
+        XmmsClient( const Config& config, Exchange<Status>& ex );
 
         /**
          * @brief   Main loop. Register all signals and broadcasts and loop infinitely
@@ -82,7 +86,10 @@ class XmmsClient
     private:
         Xmms::Client                _client;
         const Config&               _config;
-        Status&    _grEx;
+        Status                      _grStatus;
+
+        Exchange<Status>&           _grStatusExchange;
+
 };
 
 #endif // ifndef _XMMSCLIENT_H_
