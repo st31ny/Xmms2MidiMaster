@@ -18,6 +18,11 @@
 #ifndef _TYPEDEFS_H_
 #define _TYPEDEFS_H_
 
+/**
+ * @file    typedefs.h
+ * @brief   Global type and macro definitions
+ */
+
 #include <map>
 #include <utility>
 #include <chrono>
@@ -26,6 +31,11 @@
  * @brief   xmms2 song id
  */
 typedef int                                     XSongId;
+
+/**
+ * @brief   Invalid xmms2 song id
+ */
+static const XSongId                            XSongIdInvalid = 0;
 
 /**
  * @brief   song id sent over midi
@@ -37,47 +47,21 @@ typedef int                                     MSongId;
  *          song change.
  */
 typedef std::map<XSongId, MSongId>              IdMap;
+
+/**
+ * @brief   Entry of a {@link IdMap}
+ */
 typedef std::pair<XSongId, MSongId>             IdMapEntry;
 
 /**
- * @brief   Represent a complete MIDI message
+ * @brief   Complete MIDI message
  */
 typedef unsigned long                           MidiMsg;
 
 /**
- * @brief   Represent a MIDI data byte
+ * @brief   A MIDI data byte
  */
 typedef unsigned char                           MidiByte;
-
-
-/**
- * @brief   Build a status byte
- * @param   cmd
- *              MIDI command (0x80, 0x90, ...)
- * @param   channel
- *              MIDI channel
- */
-#define MIDI_STATUS_BYTE(cmd,channel)           ( ((cmd)&0xF0) | ((channel)&0x0F) )
-
-/**
- * @brief   Build a short MIDI message
- * @param   status
- *              Status byte
- * @param   data1
- *              Data byte 1
- * @param   data2
- *              Data byte 2
- */
-#define MIDI_MSG_SHORT(status,data1,data2)      ((((data2) << 16) & 0x7F0000) | \
-                                                    (((data1) << 8) & 0x7F00) | \
-                                                    ((status) & 0xFF))
-
-/**
- * @brief   Check if a MIDI short message is valid
- */
-#define MIDI_MSG_SHORT_VALID(msg)               ( ((msg)&0x80) && ((~(msg))&0x8000) && \
-                                                    ((~(msg))&0x800000) && ((~(msg))&0xFF000000) )
-
 
 /**
  * @brief   xmms2 playback time
@@ -110,6 +94,34 @@ typedef std::pair<XTimePoint, LTimePoint>       TimePoint;
  */
 static const TimePoint                          TimePointInvalid = TimePoint( XTimePointInvalid,
                                                                         LTimePointInvalid );
+
+/**
+ * @brief   Build a status byte
+ * @param   cmd
+ *              MIDI command (0x80, 0x90, ...)
+ * @param   channel
+ *              MIDI channel
+ */
+#define MIDI_STATUS_BYTE(cmd,channel)           ( ((cmd)&0xF0) | ((channel)&0x0F) )
+
+/**
+ * @brief   Build a short MIDI message
+ * @param   status
+ *              Status byte
+ * @param   data1
+ *              Data byte 1
+ * @param   data2
+ *              Data byte 2
+ */
+#define MIDI_MSG_SHORT(status,data1,data2)      ((((data2) << 16) & 0x7F0000) | \
+                                                    (((data1) << 8) & 0x7F00) | \
+                                                    ((status) & 0xFF))
+
+/**
+ * @brief   Check if a MIDI short message is valid
+ */
+#define MIDI_MSG_SHORT_VALID(msg)               ( ((msg)&0x80) && ((~(msg))&0x8000) && \
+                                                    ((~(msg))&0x800000) && ((~(msg))&0xFF000000) )
 
 #endif // ifndef _TYPEDEFS_H_
 

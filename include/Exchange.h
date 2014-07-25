@@ -42,8 +42,10 @@ class Exchange
 
         /**
          * @brief   Constructor with explicit data
-         * @param   Message
-         * @param   True to mark message as ready to read
+         * @param   data
+         *              Message
+         * @param   fReady
+         *              True to mark message as ready to read
          */
         Exchange( const T& data, bool fReady = true ) : _data( data ), _fReady( fReady )
         {
@@ -55,7 +57,8 @@ class Exchange
         /**
          * @brief   Set the message which will be delivered to a waiting reader or on the next
          *          call to {@link read()}
-         * @param   Message
+         * @param   data
+         *              Message
          * @return  Former state of the ready flag (if true the last message had not been delivered
          *          to anybody)
          */
@@ -71,8 +74,9 @@ class Exchange
 
         /**
          * @brief   Read the current message
-         * @param   If true only message marked as new is returned. Thus, the call might be 
-         *          blocking if no new message is available yet.
+         * @param   fNew
+         *              If true only message marked as new is returned. Thus, the call might be 
+         *              blocking if no new message is available yet.
          * @return  Current message
          */
         T read( bool fNew = true )
