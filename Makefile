@@ -9,7 +9,7 @@ SRC = SongIdNotifier.cpp Config.cpp XmmsClient.cpp
 # extra main source (has to be excluded for tests)
 SRC_MAIN = main.cpp
 # testing source files
-TEST_SRC = TestMain.cpp StatusTest.cpp
+TEST_SRC = TestMain.cpp StatusTest.cpp ExchangeTest.cpp
 
 # version
 VERSION = $(shell git log -1 --pretty=format:%h)
@@ -63,6 +63,8 @@ $(TEST_ODIR)/%.o: $(TEST_SRCDIR)/%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MD -o $@ $<
 
 -include $(OBJ:%.o=%.d)
+-include $(OBJ_MAIN:%.o=%.d)
+-include $(TEST_OBJ:%.o=%.d)
 
 $(ODIR):
 	$(MKDIR) $(ODIR)
