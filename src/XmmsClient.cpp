@@ -36,7 +36,7 @@ void XmmsClient::run()
     if( _config.beVerbose() )
         std::cout << "request XMMS2 signals and broadcasts\n";
     // register for broadcasts and request initial values (the latter is important: otherwise we won't
-    // have a valid state until something changes
+    // have a valid state until something changes)
     _client.playback.signalPlaytime()( Xmms::bind( &XmmsClient::signalPlaytime, this ) );
     _client.playback.getPlaytime()( Xmms::bind( &XmmsClient::signalPlaytime, this ) );
     _client.playback.broadcastCurrentID()( Xmms::bind( &XmmsClient::broadcastId, this ) );
@@ -56,7 +56,7 @@ void XmmsClient::run()
 bool XmmsClient::signalPlaytime( const int& lTime )
 {
     // get localtime
-    LTimePoint ltp = std::chrono::high_resolution_clock::now();
+    LTimePoint ltp = Now();
 
     _grStatus.setTime( lTime, ltp );
 

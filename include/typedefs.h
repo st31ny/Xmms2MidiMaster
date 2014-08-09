@@ -74,20 +74,64 @@ typedef int                                     XTimePoint;
 static const XTimePoint                         XTimePointInvalid = 0;
 
 /**
+ * @brief   System clock to use
+ */
+typedef std::chrono::high_resolution_clock      Clock;
+
+/**
  * @brief   A precise time point measured with a high resolution clock
  */
-typedef std::chrono::time_point<std::chrono::high_resolution_clock,
-            std::chrono::nanoseconds>           LTimePoint;
+typedef Clock::rep                              LTimePoint;
+
+/**
+ * @brief   Get current local time
+ * @return  LTimePoint representing the current local time
+ */
+static inline LTimePoint Now()
+{
+    return Clock::now().time_since_epoch().count();
+}
 
 /**
  * @brief   Invalid local time value
  */
-static const LTimePoint                         LTimePointInvalid = LTimePoint::min();
+static const LTimePoint                         LTimePointInvalid = 0;
 
 /**
- * @brief   Time pair holding the xmms2 time (first) and the local time point (second)
+ * @brief   Time pair holding the xmms2 time and the local time point
  */
-typedef std::pair<XTimePoint, LTimePoint>       TimePoint;
+struct TimePoint {
+    /**
+     * @brief   Constructor
+     * @param   x
+     *              Xmms2 time
+     * @param   l
+     *              Local time
+     */
+    TimePoint( XTimePoint x = XTimePointInvalid, LTimePoint l = LTimePointInvalid ) :
+        xtime( x ), ltime( l ) {}
+
+    /**
+     * @brief   Xmms2 time (arithmetic type)
+     */
+    XTimePoint                                  xtime;
+    
+    /**
+     * @brief   Local time (arithmetic type)
+     */
+    LTimePoint                                  ltime;
+
+    /**
+     * @brief   Comparison operator
+     * @param   other
+     *              Another TimePoint
+     * @return  True if this object and other represent the same time point
+     */
+    bool operator==( const TimePoint& other ) const
+    {
+        return ( xtime == other.xtime ) && ( ltime == other.ltime );
+    }
+};
 
 /**
  * @brief   Invalid time point

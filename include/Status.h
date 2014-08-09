@@ -37,6 +37,7 @@ class Status
          */
         enum EPlaybackStatus
         {
+            EPS_INVALID = -1,       ///< Invalid state
             EPS_STOPPED,            ///< Playback stopped
             EPS_PAUSED,             ///< Playback paused
             EPS_PLAYING,            ///< Playing
@@ -46,7 +47,7 @@ class Status
         /**
          * @brief   Default Constructor
          */
-        Status() : _iState( EPS_STOPPED ), _ilSongId( XSongIdInvalid ), 
+        Status() : _iState( EPS_INVALID ), _ilSongId( XSongIdInvalid ), 
                    _grTime( TimePointInvalid )
         {
         }
@@ -84,10 +85,10 @@ class Status
 
         /**
          * @brief   Get the time point pair
-         * @return  TimePoint holding the xmms2 playback position ("first") and the
-         *          corresponding local time ("second")
+         * @return  TimePoint holding the xmms2 playback position ("xtime") and the
+         *          corresponding local time ("ltime")
          */
-        TimePoint getTime() const
+        const TimePoint& getTime() const
         {
             return _grTime;
         }

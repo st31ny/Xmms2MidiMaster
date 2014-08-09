@@ -18,11 +18,30 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <thread>
+
 #include <portmidi.h>
 
+#include "Exchange.h"
 #include "Config.h"
 #include "Status.h"
 #include "XmmsClient.h"
+
+void print_status( Exchange<Status>* future )
+{
+    static int c = 0;
+    while(1) {
+        Status state = future->read();
+        if( c++ == 0 )
+        {
+            c = 0;
+            std::cout << "Status:\nID: " << state.getSongId() << "\nPB: " << state.getPlaybackStatus()
+                << "\nTP: (" << state.getTime().xtime << ','
+                << state.getTime().ltime << ")\n" << std::endl;
+        }
+    }
+}
+
 
 int main( int argc, char* argv[] )
 {
@@ -37,9 +56,11 @@ int main( int argc, char* argv[] )
         if( !config )
             throw 1;
 
-        Status state;
+        Exchange<Status> grStatusExchange;
         try {
-            XmmsClient client( config, state );
+            XmmsClient client( config, grStatusExchange );
+            std::thread th1( print_status, &grStatusExchange );
+            th1.detach();
             client.run();
         }
         catch( std::runtime_error& err )
