@@ -26,22 +26,7 @@
 #include "Config.h"
 #include "Status.h"
 #include "XmmsClient.h"
-
-void print_status( Exchange<Status>* future )
-{
-    static int c = 0;
-    while(1) {
-        Status state = future->read();
-        if( c++ == 0 )
-        {
-            c = 0;
-            std::cout << "Status:\nID: " << state.getSongId() << "\nPB: " << state.getPlaybackStatus()
-                << "\nTP: (" << state.getTime().xtime << ','
-                << state.getTime().ltime << ")\n" << std::endl;
-        }
-    }
-}
-
+#include "MidiMaster.h"
 
 int main( int argc, char* argv[] )
 {
@@ -59,27 +44,15 @@ int main( int argc, char* argv[] )
         Exchange<Status> grStatusExchange;
         try {
             XmmsClient client( config, grStatusExchange );
-            std::thread th1( print_status, &grStatusExchange );
-            th1.detach();
-            client.run();
+            MidiMaster master( config, grStatusExchange );
+            std::thread thMaster( &MidiMaster::run, std::ref( master ) );
+            thMaster.detach();
+            client.run(); // blocking
         }
         catch( std::runtime_error& err )
         {
-            std::cerr << "XMMS2 connection failed." << std::endl;
+            std::cerr << err.what() << std::endl;
             throw 2;
-        }
-
-        std::cout << "Send song ids (-1 to exit) [hex]:\n";
-        for( ; ; )
-        {
-            int ilId;
-            std::cout << "ID=";
-            std::cin >> ilId;
-            std::cout << "BEGIN=" << std::hex << config.beginNotifier().getMsg( ilId ) << '\n'
-                      << "END=  " << std::hex << config.endNotifier().getMsg( ilId )
-                      << std::endl;
-            if( ilId == -1 )
-                break;
         }
     }
     catch( int& l )

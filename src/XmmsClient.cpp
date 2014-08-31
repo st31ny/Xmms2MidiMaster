@@ -71,7 +71,7 @@ bool XmmsClient::broadcastId( const int& ilSongId )
     _grStatus.setSongId( ilSongId );
 
     // send status update
-    _grStatusExchange.write( _grStatus );
+    //_grStatusExchange.write( _grStatus );
 
     if( _config.beVerbose() )
         std::cout << "new song id: " << ilSongId << std::endl;
@@ -81,6 +81,7 @@ bool XmmsClient::broadcastId( const int& ilSongId )
 
 bool XmmsClient::broadcastStatus( const Xmms::Playback::Status& iState )
 {
+    Status::EPlaybackStatus iStatusOld = _grStatus.getPlaybackStatus();
     switch( iState )
     {
         case Xmms::Playback::STOPPED:
@@ -101,7 +102,10 @@ bool XmmsClient::broadcastStatus( const Xmms::Playback::Status& iState )
     }
 
     // send status update
-    _grStatusExchange.write( _grStatus );
+    if( iStatusOld != Status::EPS_STOPPED )
+        // after a stop, first the playback state, then the song id and finally the time broadcast is sent
+        // => we cannot write the status now as long as the id and time are unknown
+        _grStatusExchange.write( _grStatus );
 
     return true;
 }

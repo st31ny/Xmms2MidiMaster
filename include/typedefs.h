@@ -25,7 +25,11 @@
 
 #include <map>
 #include <utility>
-#include <chrono>
+
+#ifndef _PORTTIME_H_
+#define _PORTTIME_H_
+#include <porttime.h>
+#endif
 
 /**
  * @brief   xmms2 song id
@@ -76,12 +80,12 @@ static const XTimePoint                         XTimePointInvalid = 0;
 /**
  * @brief   System clock to use
  */
-typedef std::chrono::high_resolution_clock      Clock;
+//typedef std::chrono::high_resolution_clock      Clock;
 
 /**
- * @brief   A precise time point measured with a high resolution clock
+ * @brief   Representation of a local time
  */
-typedef Clock::rep                              LTimePoint;
+typedef PtTimestamp                             LTimePoint;
 
 /**
  * @brief   Get current local time
@@ -89,7 +93,7 @@ typedef Clock::rep                              LTimePoint;
  */
 static inline LTimePoint Now()
 {
-    return Clock::now().time_since_epoch().count();
+    return Pt_Time();
 }
 
 /**

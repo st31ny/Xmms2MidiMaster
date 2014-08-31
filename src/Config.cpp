@@ -65,7 +65,7 @@ Config::Config( int argc, char* argv[] ) :
         ( "device,d", po::value<PmDeviceID>(&_iDevice)->default_value( Pm_GetDefaultOutputDeviceID() ), "Set the MIDI device number to use. This must be an output device. See also option \"-l\"." )
         ( "xmms-path,x", po::value<std::string>( &_szXmmsPath )->default_value( std::getenv( "XMMS_PATH" ) ? : "" ), "Override the environment variable XMMS_PATH. If neither the environment variable nor this option is present, connect to XMMS2's default path." )
 
-        ( "fps,f", po::value<std::string>()->default_value( "film" ), "Set frame rate. One of \n \"film\" (24 fps)\n \"pal\" (25 fps)\n \"ntscd\" (29.97 fps)\n \"ntsc\" (30 fps)" )
+        ( "fps,f", po::value<std::string>()->default_value( "none" ), "Set frame rate. One of \n \"film\" (24 fps)\n \"pal\" (25 fps)\n \"ntscd\" (29.97 fps)\n \"ntsc\" (30 fps)\n\"none\" disables MIDI time code" )
         
         ( "map,m", po::value< std::vector<IdMapEntry> >()->composing(), "<XMMS2 ID>:<custom ID>\nMap a XMMS2 song ID onto a custom ID emitted when a song begins or ends" )
         ( "offset,o", po::value<int>()->default_value( 0 ), "Add this offset to the XMMS2 song ID if no direct mapping (\"-m\") is available" )
@@ -157,6 +157,10 @@ Config::Config( int argc, char* argv[] ) :
     if( mpszgr.count( "fps" ) )
     {
         std::string szFps = mpszgr[ "fps" ].as<std::string>();
+        if( szFps == "none" )
+        {
+            _iFPS = EMTF_NONE;
+        } else
         if( szFps == "film" )
         {
             _iFPS = EMTF_24;

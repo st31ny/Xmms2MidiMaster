@@ -48,6 +48,7 @@ class Config {
          */
         enum EMidiTimecodeFramerate
         {
+            EMTF_NONE,      ///< do not emit any timecode
             EMTF_24,        ///< standard film (24 FPS)
             EMTF_25,        ///< PAL video (25 FPS)
             EMTF_2997,      ///< NTSC drop-frame (29.97 FPS)

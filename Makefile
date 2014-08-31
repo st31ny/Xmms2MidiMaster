@@ -5,7 +5,7 @@ MKDIR = mkdir -p
 DOXYGEN = doxygen
 
 # source files
-SRC = SongIdNotifier.cpp Config.cpp XmmsClient.cpp
+SRC = SongIdNotifier.cpp Config.cpp XmmsClient.cpp MidiMaster.cpp
 # extra main source (has to be excluded for tests)
 SRC_MAIN = main.cpp
 # testing source files
@@ -32,7 +32,7 @@ CXXFLAGS = -std=c++11 -Wall -c -DVERSION=\"$(VERSION)\" $(DEBUG) `pkg-config --c
 CPPFLAGS = -I$(IDIR)
 
 LDFLAGS = $(DEBUG)
-LDLIBS = -lboost_program_options -lboost_regex -lportmidi `pkg-config --libs xmms2-client-cpp`
+LDLIBS = -lboost_program_options -lboost_regex -lportmidi -lporttime `pkg-config --libs xmms2-client-cpp`
 TEST_LDLIBS = -lunittest++ $(LDLIBS)
 
 ################################################################################
